@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:math';
 
 class ColorCal extends StatefulWidget {
   const ColorCal({super.key});
@@ -12,13 +13,13 @@ class _MainPageState extends State<ColorCal> {
   final TextEditingController _level2 = TextEditingController();
   final TextEditingController _target = TextEditingController();
 
-  double? ratio1;
-  double? ratio2;
+  int? ratio1;
+  int? ratio2;
 
   void _calculateRatio() {
-    final double? l1 = double.tryParse(_level1.text);
-    final double? l2 = double.tryParse(_level2.text);
-    final double? target = double.tryParse(_target.text);
+    final int? l1 = int.tryParse(_level1.text);
+    final int? l2 = int.tryParse(_level2.text);
+    final int? target = int.tryParse(_target.text);
 
     if (l1 == null || l2 == null || target == null) {
       setState(() {
@@ -28,12 +29,15 @@ class _MainPageState extends State<ColorCal> {
       return;
     }
 
-    var tempRat1 = (target - l2) / (l1 - target);
-    var tempRat2 = 1.0;
+    //var tempRat1 = (target - l2) / (l1 - target);
+    //var tempRat2 = 1.0;
+    var tempRat1 = (-1*(target - l2)).toInt();
+    var tempRat2 = (-1*(l1 - target)).toInt();
+    var mingcd = tempRat1.gcd(tempRat2);
 
     setState(() {
-      ratio1 = tempRat1;
-      ratio2 = tempRat2;
+      ratio1 = ((tempRat1)/mingcd).toInt();
+      ratio2 = ((tempRat2)/mingcd).toInt();
     });
   }
 
@@ -79,9 +83,9 @@ class _MainPageState extends State<ColorCal> {
             _buildRowWidgets(
               ['비율'],
               [
-                _buildCell(ratio1 != null ? ratio1!.toStringAsFixed(2) : '-',
+                _buildCell(ratio1 != null ? ratio1!.toString() : '-',
                     color: Colors.white),
-                _buildCell(ratio2 != null ? ratio2!.toStringAsFixed(2) : '-',
+                _buildCell(ratio2 != null ? ratio2!.toString() : '-',
                     color: Colors.white),
               ],
               [Colors.yellow, Colors.white, Colors.white],
@@ -152,7 +156,12 @@ class _MainPageState extends State<ColorCal> {
         controller: controller,
         keyboardType: TextInputType.number,
         textAlign: TextAlign.center,
-        decoration: const InputDecoration(border: InputBorder.none),
+        textAlignVertical: TextAlignVertical.center,
+        decoration: const InputDecoration(
+          border: InputBorder.none,
+          isCollapsed: true,
+          contentPadding: EdgeInsets.zero,
+        ),
       ),
     );
   }

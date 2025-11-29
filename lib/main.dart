@@ -32,9 +32,8 @@ class _MyAppState extends State<MyApp> {
             onTap: () {
               FocusManager.instance.primaryFocus?.unfocus();
             },
-            child: SafeArea(
-              child: child!,
-            ),
+            child: child!,
+            
           );
         },
         home: MyHomePage(),
@@ -54,7 +53,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
-  bool _isRailVisible = true;
+  bool _isRailVisible = false;
 
   final List<Widget> _pages = const [
     ColorCal(),
@@ -106,9 +105,21 @@ class _MyHomePageState extends State<MyHomePage> {
             : null,
           ),
           Expanded(
-            child: Container(
-              color: Theme.of(context).colorScheme.primaryContainer,
-              child: _pages[_selectedIndex],
+            child: GestureDetector(
+              behavior: HitTestBehavior.translucent,
+              onTap: () {
+                FocusManager.instance.primaryFocus?.unfocus();
+                // 메인 화면을 탭했을 때만 왼쪽 탭 접기
+                if (_isRailVisible) {
+                  setState(() {
+                    _isRailVisible = false;
+                  });
+                }
+              },
+              child: Container(
+                color: Theme.of(context).colorScheme.primaryContainer,
+                child: _pages[_selectedIndex],
+              ),
             ),
           ),
         ],
@@ -116,4 +127,3 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
-
