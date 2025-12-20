@@ -11,16 +11,20 @@ class ColorCal extends StatefulWidget {
 class _MainPageState extends State<ColorCal> {
   final TextEditingController _level1 = TextEditingController();
   final TextEditingController _level2 = TextEditingController();
+  final TextEditingController _vol1 = TextEditingController(text: "100");
+  final TextEditingController _vol2 = TextEditingController();
   final TextEditingController _target = TextEditingController();
+  bool _isUpdatingVolumes = false; // <-- 추가
 
   int? ratio1;
   int? ratio2;
+
 
   void _calculateRatio() {
     final int? l1 = int.tryParse(_level1.text);
     final int? l2 = int.tryParse(_level2.text);
     final int? target = int.tryParse(_target.text);
-
+    
     if (l1 == null || l2 == null || target == null) {
       setState(() {
         ratio1 = null;
@@ -29,16 +33,57 @@ class _MainPageState extends State<ColorCal> {
       return;
     }
 
-    //var tempRat1 = (target - l2) / (l1 - target);
-    //var tempRat2 = 1.0;
     var tempRat1 = (-1*(target - l2)).toInt();
     var tempRat2 = (-1*(l1 - target)).toInt();
+    if (tempRat2<0 && tempRat1<0){
+      tempRat2 = tempRat2*-1;
+      tempRat1 = tempRat1*-1;
+    }
     var mingcd = tempRat1.gcd(tempRat2);
 
     setState(() {
       ratio1 = ((tempRat1)/mingcd).toInt();
       ratio2 = ((tempRat2)/mingcd).toInt();
     });
+    _recalcFromVol1();    
+  }
+
+  void _recalcFromVol1() {
+    if (_isUpdatingVolumes) return;              // 다른 쪽에서 업데이트 중이면 무시
+    if (ratio1 == null || ratio2 == null) return;
+
+    final double? v1 = double.tryParse(_vol1.text);
+
+    _isUpdatingVolumes = true;
+    try {
+      if (v1 == null) {
+        _vol2.text = '';
+      } else {
+        final double v2 = v1 * ratio2! / ratio1!;
+        _vol2.text = v2.toStringAsFixed(1);
+      }
+    } finally {
+      _isUpdatingVolumes = false;
+    }
+  }
+
+  void _recalcFromVol2() {
+    if (_isUpdatingVolumes) return;              // 다른 쪽에서 업데이트 중이면 무시
+    if (ratio1 == null || ratio2 == null) return;
+
+    final double? v2 = double.tryParse(_vol2.text);
+
+    _isUpdatingVolumes = true;
+    try {
+      if (v2 == null) {
+        _vol1.text = '';
+      } else {
+        final double v1 = v2 * ratio1! / ratio2!;
+        _vol1.text = v1.toStringAsFixed(1);
+      }
+    } finally {
+      _isUpdatingVolumes = false;
+    }
   }
 
   @override
@@ -47,6 +92,8 @@ class _MainPageState extends State<ColorCal> {
     _level1.addListener(_calculateRatio);
     _level2.addListener(_calculateRatio);
     _target.addListener(_calculateRatio);
+    _vol1.addListener(_recalcFromVol1);
+    _vol2.addListener(_recalcFromVol2);
   }
 
   @override
@@ -54,6 +101,8 @@ class _MainPageState extends State<ColorCal> {
     _level1.dispose();
     _level2.dispose();
     _target.dispose();
+    _vol1.dispose();
+    _vol2.dispose();
     super.dispose();
   }
 
@@ -87,6 +136,14 @@ class _MainPageState extends State<ColorCal> {
                     color: Colors.white),
                 _buildCell(ratio2 != null ? ratio2!.toString() : '-',
                     color: Colors.white),
+              ],
+              [Colors.yellow, Colors.white, Colors.white],
+            ),
+            _buildRowWidgets(
+              ['용량(g)'],
+              [
+                _buildInputCell(_vol1, Colors.orange.shade200),
+                _buildInputCell(_vol2, Colors.orange.shade200),
               ],
               [Colors.yellow, Colors.white, Colors.white],
             ),
