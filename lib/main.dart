@@ -2,7 +2,7 @@ import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:mayone_app/pages/calculator.dart';
-import 'package:mayone_app/pages/store_webview.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:mayone_app/pages/temp.dart';
 
 void main() {
@@ -57,9 +57,22 @@ class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
   bool _isRailVisible = false;
 
+  Future<void> _openNaverStore() async {
+    const storeUrl = 'https://smartstore.naver.com/dadaminc';
+
+    final uri = Uri.parse(storeUrl);
+
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(
+        uri,
+        mode: LaunchMode.externalApplication,
+      );
+    }
+  }
+
   final List<Widget> _pages = const [
     ColorCal(),
-    NaverStorePage(),
+    TempWidget(),
     TempWidget()
   ];
 
@@ -93,7 +106,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                   NavigationRailDestination(
                     icon: Icon(Icons.book),
-                    label: Text('책구매'),
+                    label: Text('책구매(네이버스토어)'),
                   ),
                   NavigationRailDestination(
                     icon: Icon(Icons.home),
@@ -101,11 +114,23 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                 ],
                 selectedIndex: _selectedIndex,
-                onDestinationSelected: (value) {
+                onDestinationSelected: (value) async {
+                  // 📘 책구매(네이버스토어)
+                  if (value == 1) {
+                    await _openNaverStore();
+
+                    // 사이드바 닫기만 하고
+                    setState(() {
+                      _isRailVisible = false;
+                    });
+
+                    return; // 🔥 페이지 전환 안 함
+                  }
+
                   setState(() {
                     _selectedIndex = value;
+                    _isRailVisible = false;
                   });
-                  print('selected: $value');
                 },
               ),
             )
