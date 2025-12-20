@@ -2,6 +2,7 @@ import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:mayone_app/pages/calculator.dart';
+import 'package:mayone_app/pages/store_webview.dart';
 import 'package:mayone_app/pages/temp.dart';
 
 void main() {
@@ -58,6 +59,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   final List<Widget> _pages = const [
     ColorCal(),
+    NaverStorePage(),
     TempWidget()
   ];
 
@@ -88,6 +90,10 @@ class _MyHomePageState extends State<MyHomePage> {
                   NavigationRailDestination(
                     icon: Icon(Icons.calculate),
                     label: Text('염색약계산기'),
+                  ),
+                  NavigationRailDestination(
+                    icon: Icon(Icons.book),
+                    label: Text('책구매'),
                   ),
                   NavigationRailDestination(
                     icon: Icon(Icons.home),
