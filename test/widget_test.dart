@@ -25,6 +25,25 @@ void main() {
     // a1:a2 = (10-7):(7-6) = 3:1
     expect(find.text('3'), findsOneWidget);
     expect(find.text('1'), findsOneWidget);
+
+    // 약1 용량 기본값 100 → 약2 = 100 * 1/3 = 33.3 → 총 133.3g
+    expect(find.textContaining('133.3'), findsOneWidget);
+  });
+
+  testWidgets('약1 용량을 바꾸면 총 용량 표시가 갱신된다', (WidgetTester tester) async {
+    await tester.pumpWidget(const MyApp());
+
+    final fields = find.byType(TextField);
+    await tester.enterText(fields.at(0), '6');
+    await tester.enterText(fields.at(1), '10');
+    await tester.enterText(fields.at(2), '7'); // 비율 3:1
+    await tester.pump();
+
+    // 약1 용량을 60으로 변경 → 약2 = 20 → 총 80.0g
+    await tester.enterText(fields.at(3), '60');
+    await tester.pump();
+
+    expect(find.textContaining('80.0'), findsOneWidget);
   });
 
   testWidgets('범위를 벗어난 목표 레벨은 안내 문구를 보여준다', (WidgetTester tester) async {

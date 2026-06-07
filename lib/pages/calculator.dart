@@ -136,6 +136,9 @@ class _ColorCalState extends State<ColorCal> {
     } finally {
       _isUpdatingVolumes = false;
     }
+    // 총 용량 표시는 build()에서 컨트롤러 값을 읽어 계산하므로,
+    // 용량이 바뀌면 부모 위젯을 다시 그려 줘야 한다.
+    if (mounted) setState(() {});
   }
 
   void _recalcFromVol2() {
@@ -157,6 +160,7 @@ class _ColorCalState extends State<ColorCal> {
     } finally {
       _isUpdatingVolumes = false;
     }
+    if (mounted) setState(() {});
   }
 
   static int _gcd(int a, int b) {

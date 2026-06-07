@@ -41,7 +41,8 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
 
-  static const String _naverStoreUrl = 'https://smartstore.naver.com/dadaminc';
+  static const String _naverStoreUrl =
+      'https://smartstore.naver.com/mayone-market';
 
   final List<Widget> _pages = const [ColorCal(), TempWidget()];
 
@@ -79,7 +80,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             _DrawerItem(
               icon: Icons.menu_book_outlined,
-              label: '책 구매 (네이버 스토어)',
+              label: '메이원마켓',
               onTap: () async {
                 Navigator.of(context).pop();
                 await _openNaverStore();
