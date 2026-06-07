@@ -1,9 +1,4 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
+// MAYONE 앱의 기본 위젯/로직 테스트.
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -11,20 +6,36 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mayone_app/main.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
+  testWidgets('앱이 MAYONE 타이틀과 함께 뜬다', (WidgetTester tester) async {
+    await tester.pumpWidget(const MyApp());
+    expect(find.text('MAYONE'), findsWidgets);
+    expect(find.text('염색약 레벨 계산기'), findsWidgets);
+  });
+
+  testWidgets('레벨 입력 시 혼합 비율(3:1)이 계산된다', (WidgetTester tester) async {
     await tester.pumpWidget(const MyApp());
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
-
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
+    final fields = find.byType(TextField);
+    // 순서: [약1 레벨, 약2 레벨, 원하는 레벨, 약1 용량, 약2 용량]
+    await tester.enterText(fields.at(0), '6'); // 약1 레벨
+    await tester.enterText(fields.at(1), '10'); // 약2 레벨
+    await tester.enterText(fields.at(2), '7'); // 원하는 레벨
     await tester.pump();
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
+    // a1:a2 = (10-7):(7-6) = 3:1
+    expect(find.text('3'), findsOneWidget);
     expect(find.text('1'), findsOneWidget);
+  });
+
+  testWidgets('범위를 벗어난 목표 레벨은 안내 문구를 보여준다', (WidgetTester tester) async {
+    await tester.pumpWidget(const MyApp());
+
+    final fields = find.byType(TextField);
+    await tester.enterText(fields.at(0), '6');
+    await tester.enterText(fields.at(1), '10');
+    await tester.enterText(fields.at(2), '12'); // 6~10 범위 밖
+    await tester.pump();
+
+    expect(find.textContaining('사이'), findsOneWidget);
   });
 }
