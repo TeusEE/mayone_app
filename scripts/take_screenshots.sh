@@ -41,6 +41,11 @@ capture() {
 capture "$IPHONE" "screenshots/iphone"
 capture "$IPAD" "screenshots/ipad"
 
+# App Store Connect는 알파 채널(투명도)이 포함된 스크린샷을 거부하므로 제거한다.
+echo ""
+echo "▶ 알파 채널 제거..."
+python3 "$(dirname "$0")/strip_alpha.py" screenshots
+
 echo ""
 echo "✅ 완료"
 echo "   screenshots/iphone/  (3장)"
